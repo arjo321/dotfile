@@ -1,0 +1,2 @@
+pkill wlogout
+wlogout

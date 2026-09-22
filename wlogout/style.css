@@ -1,0 +1,100 @@
+
+@import '/home/arjo/.config/waybar/color/color.css';
+
+window {
+    font-family: "Fira Code Medium", "JetBrains Mono", sans-serif;
+    font-size: 16pt;
+    color: @foreground;
+    background-color: rgba(15, 15, 20, 0.65); 
+} 
+
+button {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20%;
+    
+    /* Frosted glass effect base */
+    background-color: alpha(@background, 0.4);
+    border: 2px solid alpha(@foreground, 0.05);
+    border-radius: 36px;
+    margin: 20px;
+    
+    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.5);
+    
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+button:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+button:hover {
+    background-size: 20%; 
+    border: 2px solid @color6;
+    background-color: alpha(@color6, 0.15);
+    color: @color6;
+    text-shadow: 0 0 8px alpha(@color6, 0.6);
+    box-shadow: 0 0 25px 5px alpha(@color6, 0.4);
+    transition: all 0.4s cubic-bezier(.55, 0.0, .28, 1.682);
+}
+
+#shutdown {
+    background-image: image(url("./icons/power.png"));
+}
+#shutdown:hover {
+    background-image: image(url("./icons/power-hover.png"));
+    border-color: @color1;
+    color: @color1;
+    text-shadow: 0 0 10px alpha(@color1, 0.8);
+    box-shadow: 0 0 30px 5px alpha(@color1, 0.5);
+    background-color: alpha(@color1, 0.15);
+}
+
+#reboot {
+    background-image: image(url("./icons/restart.png"));
+}
+#reboot:hover {
+    background-image: image(url("./icons/restart-hover.png"));
+    border-color: @color3;
+    color: @color3;
+    text-shadow: 0 0 10px alpha(@color3, 0.8);
+    box-shadow: 0 0 30px 5px alpha(@color3, 0.5);
+    background-color: alpha(@color3, 0.15);
+}
+
+#logout {
+    background-image: image(url("./icons/logout.png"));
+}
+#logout:hover {
+    background-image: image(url("./icons/logout-hover.png"));
+    border-color: @color4;
+    color: @color4;
+    text-shadow: 0 0 10px alpha(@color4, 0.8);
+    box-shadow: 0 0 30px 5px alpha(@color4, 0.5);
+    background-color: alpha(@color4, 0.15);
+}
+
+#lock {
+    background-image: image(url("./icons/lock.png"));
+}
+#lock:hover {
+    background-image: image(url("./icons/lock-hover.png"));
+    border-color: @color2;
+    color: @color2;
+    text-shadow: 0 0 10px alpha(@color2, 0.8);
+    box-shadow: 0 0 30px 5px alpha(@color2, 0.5);
+    background-color: alpha(@color2, 0.15);
+}
+
+#hibernate {
+    background-image: image(url("./icons/hibernate.png"));
+}
+#hibernate:hover {
+    background-image: image(url("./icons/hibernate-hover.png"));
+    border-color: @color5;
+    color: @color5;
+    text-shadow: 0 0 10px alpha(@color5, 0.8);
+    box-shadow: 0 0 30px 5px alpha(@color5, 0.5);
+    background-color: alpha(@color5, 0.15);
+}
