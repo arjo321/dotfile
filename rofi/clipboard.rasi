@@ -1,0 +1,66 @@
+* {
+    bg-color: #11111b;       /* Dark background */
+    bg-alt:   #313244;       /* Lighter background for selections */
+    fg-color: #cdd6f4;       /* Text color */
+    accent:   #89b4fa;       /* Blue accent color */
+    
+    background-color: transparent;
+    text-color: @fg-color;
+    font: "JetBrainsMono Nerd Font 12"; /* Change to your preferred font */
+}
+
+window {
+    width: 600px;
+    background-color: @bg-color;
+    border: 2px solid;
+    border-color: @accent;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+inputbar {
+    background-color: @bg-alt;
+    border-radius: 8px;
+    padding: 10px;
+    children: [prompt, entry];
+}
+
+prompt {
+    text-color: @accent;
+    padding: 0 10px 0 0;
+    font: "JetBrainsMono Nerd Font Bold 12";
+}
+
+entry {
+    placeholder: "Search clipboard...";
+    placeholder-color: #6c7086;
+}
+
+listview {
+    margin: 15px 0 0 0;
+    lines: 5; /* Lowered from 8 to prevent the window from getting too tall */
+    scrollbar: false;
+}
+
+element {
+    padding: 10px;
+    border-radius: 8px;
+    spacing: 12px; 
+    children: [element-icon, element-text];
+}
+
+element selected {
+    background-color: @bg-alt;
+    text-color: @accent;
+}
+
+element-icon {
+    size: 1.5em; /* Smaller image previews */
+    background-color: transparent;
+}
+
+element-text {
+    vertical-align: 0.5; /* Keeps the text perfectly centered next to the image */
+    background-color: transparent;
+    text-color: inherit;
+}

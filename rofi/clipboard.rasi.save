@@ -1,0 +1,31 @@
+* {bg-color;
+    border: 2px solid;
+    border-color: @accent;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+inputbar {
+    background-color: @bg-alt;
+    border-radius: 8px;
+    padding: 10px;
+    children: [prompt, entry];
+}
+
+prompt {
+    text-color: @accent;
+    padding: 0 10px 0 0;
+    font: "JetBrainsMono Nerd Font Bold 12";
+}
+
+entry {
+    placeholder: "Search...";
+    placeholder-color: #6c7086;
+}
+
+listview {
+    margin: 15px 0 0 0;
+    lines: 8;
+    scrollbar: false;
+}
+
