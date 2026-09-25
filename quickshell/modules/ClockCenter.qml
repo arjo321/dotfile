@@ -9,11 +9,20 @@ Rectangle {
     implicitWidth: label.implicitWidth + 24
     implicitHeight: 26
     radius: theme.radiusSmall
-    color: hoverArea.containsMouse ? theme.cardHover : "transparent"
+    // Rice: the pill tints with the accent (instead of the plain card
+    // color) while hovered, so it reads as part of the wallpaper palette.
+    color: {
+        if (!hoverArea.containsMouse) return "transparent";
+        Qt.rgba(theme.accent.r, theme.accent.g, theme.accent.b, 0.16)
+    }
 
     Behavior on color { ColorAnimation { duration: 120 } }
 
     property string _now: ""
+
+    // Hover/click state for the bar to wire into the dashboard.
+    readonly property bool hovered: hoverArea.containsMouse
+    signal clicked
 
     function _fmt() {
         var d = new Date();
@@ -46,15 +55,19 @@ Rectangle {
         id: label
         anchors.centerIn: parent
         text: root._now
-        color: root.theme.text
+        color: hoverArea.containsMouse ? root.theme.accent : root.theme.text
         font.pixelSize: root.theme.fontSize
         font.family: "monospace"
         font.bold: true
+
+        Behavior on color { ColorAnimation { duration: 120 } }
     }
 
     MouseArea {
         id: hoverArea
         anchors.fill: parent
         hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.clicked()
     }
 }

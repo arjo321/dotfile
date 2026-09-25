@@ -8,9 +8,11 @@ QtObject {
     property color cardHover: "#332c46"
     property color border: "#3a3350"
 
-    // Accent / text
+    // Accent / text. `accent` is overridden from the wallpaper palette
+    // (see shell.qml), and `accentDim` follows it as a darker shade so
+    // hover states stay in sync with whatever the wallpaper picked.
     property color accent: "#ab97f0"
-    property color accentDim: "#7a6bb0"
+    readonly property color accentDim: Qt.darker(accent, 1.35)
     property color text: "#eae6f7"
     property color subtext: "#9d94b8"
     property color danger: "#f0797a"
@@ -41,7 +43,24 @@ QtObject {
     property string iconFontFamily: iconFontLoader.name || "Material Symbols Rounded"
     property int iconFontSize: Math.round(16 * scale)
 
-    // Capsule "pill" grouping used for bar sections (end-4 dots-hyprland look)
+    // Capsule "pill" grouping used for bar sections (end-4 dots-hyprland
+    // look). `pill` is overridden from the wallpaper palette; the hover
+    // shade is derived from it so the bar tint is followed consistently.
     property color pill: "#2a2438"
-    property color pillHover: "#332c46"
+    readonly property color pillHover: Qt.lighter(pill, 1.22)
+
+    // The fixed, hand-picked palette — used verbatim when Settings →
+    // "Wallpaper colors" is switched off (see the Bindings in shell.qml).
+    readonly property QtObject fixed: QtObject {
+        property color bg: "#1b1725"
+        property color bgAlt: "#221c30"
+        property color card: "#2a2438"
+        property color cardHover: "#332c46"
+        property color border: "#3a3350"
+        property color pill: "#2a2438"
+        property color accent: "#ab97f0"
+        property color text: "#eae6f7"
+        property color subtext: "#9d94b8"
+        property color danger: "#f0797a"
+    }
 }

@@ -84,7 +84,12 @@ Item {
         applyProc.command = ["bash", "-lc",
             "command -v awww >/dev/null 2>&1 || exit 1; " +
             "pgrep -x awww-daemon >/dev/null 2>&1 || (awww-daemon >/dev/null 2>&1 & sleep 0.4); " +
-            "awww img " + JSON.stringify(path)];
+            "awww img " + JSON.stringify(path) + "; " +
+            // Recolor the shell from the new wallpaper (matugen template
+            // writes ~/.cache/quickshell/colors.json, which shell.qml
+            // watches). Never fail the apply because of theming.
+            "command -v matugen >/dev/null 2>&1 && " +
+            "matugen image " + JSON.stringify(path) + " --prefer darkness >/dev/null 2>&1 || true"];
         applyProc.running = true;
     }
 

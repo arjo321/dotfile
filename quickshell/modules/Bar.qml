@@ -19,10 +19,15 @@ PanelWindow {
     }
     exclusionMode: ExclusionMode.Auto
     
+    // The bar's gap/inset is a real setting (Settings → "Bar margin &
+    // gap"); binding it here keeps the bar and every popout panel aligned
+    // on the exact same value, scaled with the UI scale.
+    readonly property int gapPx: root.theme.gap
+
     // THIS CONTROLS THE SPACE BETWEEN THE BAR AND YOUR APPS:
-    // Change the "+ 4" to a higher number (like + 10) for more space, 
+    // Change "+ gapPx" to a higher number (like + 10) for more space, 
     // or a lower number (like + 0) for less space.
-    implicitHeight: root.theme.barHeight + root.theme.gap
+    implicitHeight: root.theme.barHeight + root.gapPx
     
     color: "transparent"
 
@@ -70,12 +75,35 @@ PanelWindow {
         height: root.theme.barHeight
         
         // This margin pushes the bar away from the top/left/right edges of your monitor
-        anchors.topMargin: root.theme.gap
-        anchors.leftMargin: root.theme.gap
-        anchors.rightMargin: root.theme.gap
+        anchors.topMargin: root.gapPx
+        anchors.leftMargin: root.gapPx
+        anchors.rightMargin: root.gapPx
         
         radius: height / 2
-        color: root.theme.pill
+
+        // Wallpaper-tinted pill at the opacity set in Settings →
+        // "Bar background opacity".
+        color: {
+            var c = root.theme.pill;
+            Qt.rgba(c.r, c.g, c.b, Math.max(0, Math.min(1, root.config.barOpacity)));
+        }
+
+        // Rice: accent hairline along the bar's bottom edge, fading out at
+        // both ends so it reads as a glow rather than a hard line.
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 34
+            anchors.rightMargin: 34
+            height: 2
+            radius: 1
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Qt.rgba(root.theme.accent.r, root.theme.accent.g, root.theme.accent.b, 0) }
+                GradientStop { position: 0.5; color: Qt.rgba(root.theme.accent.r, root.theme.accent.g, root.theme.accent.b, 0.7) }
+                GradientStop { position: 1.0; color: Qt.rgba(root.theme.accent.r, root.theme.accent.g, root.theme.accent.b, 0) }
+            }
+        }
 
         // ---------- Left: launcher + workspaces ----------
         Row {
@@ -259,11 +287,13 @@ PanelWindow {
                     theme: root.theme
                     config: root.config
                     anchors.verticalCenter: parent.verticalCenter
+                    // ONLY the clock pill opens the overview — the rest of
+                    // the bar center is inert, so passing the mouse over the
+                    // bar never pops it open by accident. UiState adds a
+                    // short dwell delay on top of this.
+                    onHoveredChanged: root.ui.clockHovered = hovered
+                    onClicked: root.ui.toggleDashboard()
                 }
-            }
-
-            HoverHandler {
-                onHoveredChanged: root.ui.clockHovered = hovered
             }
         }
     }

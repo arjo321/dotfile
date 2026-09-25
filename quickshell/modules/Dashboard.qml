@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
 import Quickshell.Services.Mpris
+import Qt5Compat.GraphicalEffects
 
 PanelWindow {
     id: root
@@ -123,23 +124,60 @@ PanelWindow {
         onClicked: root.ui.closeDashboard()
     }
 
-    Rectangle {
-        id: card
+    // Everything about the card (shadow, glow, entrance animation) lives in
+    // this wrapper so the decoration and the card move as one unit.
+    Item {
+        id: cardWrap
         width: Math.min(740, root.width - 32)
         height: Math.min(520, root.height - root.theme.barHeight - 24)
-        radius: root.theme.radius
-        color: root.theme.bg
-        border.color: root.theme.border
-        border.width: 1
-        clip: true
-
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: root.theme.barHeight + root.theme.gap
 
-        HoverHandler {
-            onHoveredChanged: root.ui.dashboardHovered = hovered
+        // Entrance rice: the panel window itself has to appear instantly
+        // (it owns the click-outside catcher), so the card does the motion.
+        opacity: root.ui.dashboardOpen ? 1 : 0
+        scale: root.ui.dashboardOpen ? 1 : 0.97
+        Behavior on opacity { NumberAnimation { duration: 130 } }
+        Behavior on scale { NumberAnimation { duration: 170; easing.type: Easing.OutCubic } }
+        transform: Translate {
+            y: root.ui.dashboardOpen ? 0 : -14
+            Behavior on y { NumberAnimation { duration: 170; easing.type: Easing.OutCubic } }
         }
+
+        // Wallpaper-accent halo bleeding out from behind the card.
+        RectangularGlow {
+            id: accentGlow
+            anchors.fill: card
+            anchors.margins: -18
+            cornerRadius: root.theme.radius + 18
+            glowRadius: 34
+            spread: 0.08
+            color: Qt.rgba(root.theme.accent.r, root.theme.accent.g, root.theme.accent.b, 0.18)
+        }
+
+        // Dark drop shadow so the card lifts off the wallpaper.
+        RectangularGlow {
+            anchors.fill: card
+            anchors.margins: -8
+            cornerRadius: root.theme.radius + 8
+            glowRadius: 30
+            spread: 0.15
+            color: Qt.rgba(0, 0, 0, 0.55)
+        }
+
+        Rectangle {
+            id: card
+            anchors.fill: parent
+            radius: root.theme.radius
+            color: root.theme.bg
+            border.color: root.theme.border
+            border.width: 1
+            clip: true
+
+            HoverHandler {
+                onHoveredChanged: root.ui.dashboardHovered = hovered
+            }
 
         // Absorbs clicks on blank space within the card (margins, gaps
         // between cards, the tab bar background, etc.) so they don't fall
@@ -168,6 +206,19 @@ PanelWindow {
                         required property int index
                         width: card.width / root.tabs.length
                         height: parent.height
+                        readonly property bool hovered: tabMouse.containsMouse
+
+                        // Rice: soft accent pill behind the active (or hovered) tab.
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: parent.width - 14
+                            height: 44
+                            radius: root.theme.radiusSmall
+                            color: root.theme.accent
+                            opacity: root.currentTab === tabItem.index ? 0.14
+                                     : (tabItem.hovered ? 0.08 : 0)
+                            Behavior on opacity { NumberAnimation { duration: 140 } }
+                        }
 
                         Column {
                             anchors.centerIn: parent
@@ -199,6 +250,7 @@ PanelWindow {
                         }
 
                         MouseArea {
+                            id: tabMouse
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
@@ -208,7 +260,16 @@ PanelWindow {
                 }
             }
 
-            Rectangle { width: parent.width; height: 1; color: root.theme.border }
+            // Accent hairline under the tab bar — fades out at both ends.
+            Rectangle {
+                width: parent.width
+                height: 1
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: Qt.rgba(root.theme.accent.r, root.theme.accent.g, root.theme.accent.b, 0) }
+                    GradientStop { position: 0.5; color: Qt.rgba(root.theme.accent.r, root.theme.accent.g, root.theme.accent.b, 0.55) }
+                    GradientStop { position: 1.0; color: Qt.rgba(root.theme.accent.r, root.theme.accent.g, root.theme.accent.b, 0) }
+                }
+            }
 
             // ---------------- Tab content ----------------
             Item {
@@ -599,5 +660,6 @@ PanelWindow {
                 }
             }
         }
+    }
     }
 }

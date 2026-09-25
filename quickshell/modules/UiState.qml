@@ -3,14 +3,16 @@ import QtQuick
 QtObject {
     id: ui
 
-    // Hover-driven dashboard (opens when hovering the center clock)
+    // Hover-driven dashboard. Opening is hover-INTENT based (see
+    // _openTimer below): the pointer has to rest on the clock for a
+    // moment, so sweeping the mouse across the bar never pops it open.
     property bool clockHovered: false
     property bool dashboardHovered: false
     property bool dashboardOpen: false
 
     // Click-toggled overlay panels. Only one of these is open at a time.
     // Valid values: "" | "wifi" | "bluetooth" | "notifications" | "launcher"
-    // ("power" was removed — the power icon launches wlogout directly now)
+    // | "trayMenu" | "power" (wlogout fallback)
     property string openPanel: ""
 
     // The Settings app is a real floating window, independent of openPanel.
@@ -59,12 +61,37 @@ QtObject {
         onTriggered: ui.dashboardOpen = false
     }
 
+    // Hover intent: only open after the pointer has stayed put for a beat.
+    property Timer _openTimer: Timer {
+        interval: 180
+        onTriggered: {
+            if (ui.clockHovered || ui.dashboardHovered) {
+                ui._closeTimer.stop();
+                ui.openPanel = "";      // close any click-panel first
+                ui.dashboardOpen = true;
+            }
+        }
+    }
+
+    // Clicking the clock pins/unpins the dashboard (hover still works too).
+    function toggleDashboard() {
+        ui._openTimer.stop();
+        ui._closeTimer.stop();
+        ui.dashboardOpen = !ui.dashboardOpen;
+        if (ui.dashboardOpen) ui.openPanel = "";
+    }
+
     function _updateDashboard() {
         if (ui.clockHovered || ui.dashboardHovered) {
             ui._closeTimer.stop();
-            ui.openPanel = "";      // close any click-panel before the dashboard opens
-            ui.dashboardOpen = true;
+            if (ui.dashboardOpen) {
+                ui._openTimer.stop();
+                ui.openPanel = "";      // close any click-panel before the dashboard opens
+            } else {
+                ui._openTimer.start();  // dwell before opening
+            }
         } else {
+            ui._openTimer.stop();
             ui._closeTimer.restart();
         }
     }

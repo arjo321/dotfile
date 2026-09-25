@@ -8,10 +8,11 @@ PanelWindow {
     required property var theme
     required property var ui
 
-    anchors { top: true; right: true }
+    // Spans the whole screen (same pattern as Dashboard) so a click
+    // anywhere outside the card — not just in the side column — closes it.
+    anchors { top: true; left: true; right: true }
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
-    implicitWidth: Math.min(340, screen ? screen.width : 340)
     implicitHeight: screen ? screen.height : 900
     focusable: false
     visible: ui.openPanel === "bluetooth"

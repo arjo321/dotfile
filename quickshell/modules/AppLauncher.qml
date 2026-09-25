@@ -8,10 +8,11 @@ PanelWindow {
     required property var theme
     required property var ui
 
-    anchors { top: true; left: true }
+    // Spans the whole screen (same pattern as Dashboard) so a click
+    // anywhere outside the card — not just in the left column — closes it.
+    anchors { top: true; left: true; right: true }
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
-    implicitWidth: Math.min(380, screen ? screen.width : 380)
     implicitHeight: screen ? screen.height : 900
     focusable: true
     visible: ui.openPanel === "launcher"
@@ -79,7 +80,9 @@ PanelWindow {
 
     Rectangle {
         id: card
-        width: parent.width - 16
+        // Fixed width (the old window was a 380px column and the card
+        // derived its width from it; the window now spans the screen).
+        width: Math.min(364, parent.width - 16)
         height: Math.min(460, root.height - root.theme.barHeight - 24)
         radius: root.theme.radius
         color: root.theme.bg

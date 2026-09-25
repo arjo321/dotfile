@@ -105,9 +105,36 @@ Item {
 
                     Text { text: "Appearance"; color: root.theme.text; font.pixelSize: 18; font.bold: true }
 
-                    Text { text: "Accent color"; color: root.theme.subtext; font.pixelSize: root.theme.fontSizeSmall }
+                    Row {
+                        width: 320
+                        height: 26
+                        Text {
+                            width: parent.width - 50
+                            text: "Wallpaper colors (matugen)"
+                            color: root.theme.text
+                            font.pixelSize: root.theme.fontSizeSmall
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        ToggleSwitch {
+                            theme: root.theme
+                            checked: root.config.wallpaperColors
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (v) => root.config.wallpaperColors = v
+                        }
+                    }
+                    Text {
+                        text: root.config.wallpaperColors
+                              ? "Bar and panels take their colors from the wallpaper's dark tones and recolor on every wallpaper change."
+                              : "Off — using the fixed built-in palette."
+                        color: root.theme.subtext
+                        font.pixelSize: root.theme.fontSizeSmall - 1
+                    }
+
+                    Text { text: "Accent color"; color: root.theme.subtext; font.pixelSize: root.theme.fontSizeSmall; topPadding: 8 }
                     Row {
                         spacing: 10
+                        opacity: (root.config.wallpaperColors && root.config.accentFromWallpaper) ? 0.35 : 1
+                        Behavior on opacity { NumberAnimation { duration: 150 } }
                         Repeater {
                             model: ["#ab97f0", "#7ac3f0", "#7adba0", "#f0c97a", "#f0797a", "#f07ad6"]
                             Rectangle {
@@ -119,7 +146,10 @@ Item {
                                 MouseArea {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: root.config.accentColor = parent.modelData
+                                    onClicked: {
+                                        root.config.accentColor = parent.modelData;
+                                        root.config.accentFromWallpaper = false;
+                                    }
                                 }
                             }
                         }
@@ -130,10 +160,38 @@ Item {
                                 text: root.config.accentColor
                                 color: root.theme.text; font.pixelSize: root.theme.fontSizeSmall; clip: true
                                 onEditingFinished: {
-                                    if (/^#[0-9a-fA-F]{6}$/.test(text)) root.config.accentColor = text;
+                                    if (/^#[0-9a-fA-F]{6}$/.test(text)) {
+                                        root.config.accentColor = text;
+                                        root.config.accentFromWallpaper = false;
+                                    }
                                 }
                             }
                         }
+                    }
+
+                    Row {
+                        visible: root.config.wallpaperColors
+                        width: 320
+                        height: 26
+                        Text {
+                            width: parent.width - 50
+                            text: "Accent from wallpaper"
+                            color: root.theme.text
+                            font.pixelSize: root.theme.fontSizeSmall
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        ToggleSwitch {
+                            theme: root.theme
+                            checked: root.config.accentFromWallpaper
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (v) => root.config.accentFromWallpaper = v
+                        }
+                    }
+                    Text {
+                        visible: root.config.wallpaperColors && root.config.accentFromWallpaper
+                        text: "Accent follows the wallpaper — click a swatch above to switch to a fixed accent."
+                        color: root.theme.subtext
+                        font.pixelSize: root.theme.fontSizeSmall - 1
                     }
 
                     Text {
@@ -350,9 +408,10 @@ Item {
                         }
                     }
 
-                    // --- NEW BAR GAP SLIDER ---
+                    // Bar inset: drives the bar's margins AND the spacing of
+                    // every popout panel, so they all stay flush with it.
                     Text {
-                        text: "Bar Margin & Gap (" + Math.round(root.config.barGap || 8) + "px)"
+                        text: "Bar margin & gap (" + Math.round(root.config.barGap) + "px)"
                         color: root.theme.subtext
                         font.pixelSize: root.theme.fontSizeSmall
                         topPadding: 10
@@ -361,7 +420,7 @@ Item {
                         theme: root.theme
                         width: 260
                         // Maps 0-30 pixels onto the 0.0 - 1.0 slider value
-                        value: (root.config.barGap || 8) / 30.0
+                        value: root.config.barGap / 30.0
                         onMoved: (v) => root.config.barGap = Math.round(v * 30)
                     }
 

@@ -39,7 +39,7 @@ if [ -n "$CHOICE" ]; then
   swww img "$CHOSEN_FILE" --transition-type grow
 
   # 3. Extract the tactical dark colors
-  matugen image "$CHOSEN_FILE" -m dark --source-color-index 2
+  matugen image "$CHOSEN_FILE" -m dark --prefer darkness
 
   # 4. Kill and restart Waybar securely in the background
   pkill waybar
